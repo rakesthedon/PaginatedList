@@ -7,12 +7,12 @@
 
 import Foundation
 
-open class PaginatedListSectionBuilder<Item: PaginatedListItem> {
+open class PaginatedListSectionBuilder {
 
     public init() {
     }
 
-    open func buildSections(from items: [Item]) -> [PaginatedListSection<Item>] {
+    open func buildSections(from items: [any PaginatedListItem]) -> [PaginatedListSection] {
         return [PaginatedListSection(id: "default", title: nil, items: items)]
     }
 }

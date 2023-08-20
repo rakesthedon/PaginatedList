@@ -7,14 +7,16 @@
 
 import SwiftUI
 
-public protocol PaginatedListItem: Identifiable {}
+public protocol PaginatedListItem: Identifiable {
+    var id: String { get }
+}
 
-public struct PaginatedList<Item: PaginatedListItem, ItemView: View, TitleView: View>: View {
+public struct PaginatedList<ItemView, TitleView: View>: View where ItemView: View {
 
     private let isInitialLoading: Bool
     private let canLoadMore: Bool
 
-    private let sections: [PaginatedListSection<Item>]
+    private let sections: [PaginatedListSection]
     private let onEndListReached: (() -> Void)?
     private let onRefresh: (() -> Void)?
 
@@ -22,15 +24,15 @@ public struct PaginatedList<Item: PaginatedListItem, ItemView: View, TitleView: 
     private var titleViewBuilder: (_ title: String) -> TitleView
 
     @ViewBuilder
-    private var contentViewBuilder: (_ item: Item) -> ItemView
+    private var contentViewBuilder: (_ item: any PaginatedListItem) -> ItemView
 
     public init(isInitialLoading: Bool,
                 canLoadMore: Bool,
-                sections: [PaginatedListSection<Item>],
+                sections: [PaginatedListSection],
                 onEndListReached: (() -> Void)? = nil,
                 onRefresh: (() -> Void)? = nil,
                 @ViewBuilder titleViewBuilder: @escaping (_ title: String) -> TitleView = { _ in EmptyView() },
-                @ViewBuilder contentViewBuilder: @escaping (_ item: Item) -> ItemView) {
+                @ViewBuilder contentViewBuilder: @escaping (_ item: any PaginatedListItem) -> ItemView) {
         self.isInitialLoading = isInitialLoading
         self.canLoadMore = canLoadMore
         self.sections = sections
@@ -84,19 +86,18 @@ public struct PaginatedList<Item: PaginatedListItem, ItemView: View, TitleView: 
         .onAppear {
             onEndListReached?()
         }
-        .id(UUID())
     }
 }
 
-fileprivate struct ListSection<Item: PaginatedListItem, ItemView: View, TitleView: View>: View {
+fileprivate struct ListSection<ItemView: View, TitleView: View>: View {
 
-    let section: PaginatedListSection<Item>
+    let section: PaginatedListSection
     @ViewBuilder var titleViewBuilder: ((_ title: String) -> TitleView)
-    @ViewBuilder var contentViewBuilder: (_ item: Item) -> ItemView
+    @ViewBuilder var contentViewBuilder: (_ item: any PaginatedListItem) -> ItemView
 
-    init(section: PaginatedListSection<Item>,
+    init(section: PaginatedListSection,
          @ViewBuilder titleViewBuilder: @escaping ((_: String) -> TitleView) = { _ in EmptyView() },
-         @ViewBuilder contentViewBuilder: @escaping (_ item: Item) -> ItemView) {
+         @ViewBuilder contentViewBuilder: @escaping (_ item: any PaginatedListItem) -> ItemView) {
         self.section = section
         self.titleViewBuilder = titleViewBuilder
         self.contentViewBuilder = contentViewBuilder
@@ -108,7 +109,7 @@ fileprivate struct ListSection<Item: PaginatedListItem, ItemView: View, TitleVie
             title
         }
 
-        ForEach(section.items) { item in
+        ForEach(section.items, id: \.id) { item in
             contentViewBuilder(item)
         }
     }
