@@ -20,4 +20,3 @@ open class PaginatedListSection: Identifiable {
         self.items = items
     }
 }
-

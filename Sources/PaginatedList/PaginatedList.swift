@@ -44,7 +44,6 @@ public struct PaginatedList<ItemView, TitleView: View>: View where ItemView: Vie
         self.contentViewBuilder = contentViewBuilder
     }
 
-
     public var body: some View {
         if isInitialLoading {
             loadingIndicator
@@ -63,7 +62,10 @@ public struct PaginatedList<ItemView, TitleView: View>: View where ItemView: Vie
     private var list: some View {
         List {
             ForEach(sections) { section in
-                ListSection(section: section, titleViewBuilder: titleViewBuilder, contentViewBuilder: contentViewBuilder)
+                ListSection(
+                    section: section,
+                    titleViewBuilder: titleViewBuilder,
+                    contentViewBuilder: contentViewBuilder)
             }
 
             if canLoadMore {
@@ -89,7 +91,7 @@ public struct PaginatedList<ItemView, TitleView: View>: View where ItemView: Vie
     }
 }
 
-fileprivate struct ListSection<ItemView: View, TitleView: View>: View {
+private struct ListSection<ItemView: View, TitleView: View>: View {
 
     let section: PaginatedListSection
     @ViewBuilder var titleViewBuilder: ((_ title: String) -> TitleView)
