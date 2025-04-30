@@ -73,9 +73,6 @@ public struct PaginatedList<ItemView, TitleView: View>: View where ItemView: Vie
             }
         }
         .transition(.opacity)
-        .safeAreaInset(edge: .bottom) {
-            Color.clear.frame(height: 200)
-        }
     }
 
     @ViewBuilder
